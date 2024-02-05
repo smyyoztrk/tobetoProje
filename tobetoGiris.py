@@ -130,12 +130,12 @@ class test_tobeto:
         
         self.driver.switch_to.default_content()
         
-        iframe_mesaj_kutusu = WebDriverWait(self.driver,15).until(ec.visibility_of_element_located((By.CSS_SELECTOR,"iframe[class='exw-conversation-container-frame']")))
-        #sleep(3)
-        WebDriverWait(self.driver,5).until(ec.frame_to_be_available_and_switch_to_it(iframe_mesaj_kutusu))
+        iframe_mesaj_kutusu = WebDriverWait(self.driver,40).until(ec.visibility_of_element_located((By.CSS_SELECTOR,"iframe[class='exw-conversation-container-frame']")))
+        
+        WebDriverWait(self.driver,20).until(ec.frame_to_be_available_and_switch_to_it(iframe_mesaj_kutusu))
         #self.driver.switch_to.frame(iframe_mesaj_kutusu)
         
-        tobeto_mesaj_kutusu = WebDriverWait(self.driver,5).until(ec.visibility_of_element_located((By.CSS_SELECTOR,"h4[class='exw-title exw-with-avatar']")))
+        tobeto_mesaj_kutusu = WebDriverWait(self.driver,10).until(ec.visibility_of_element_located((By.CSS_SELECTOR,"h4[class='exw-title exw-with-avatar']")))
         print("iframe girdi")
         var_mı = tobeto_mesaj_kutusu.is_displayed()
         #assert var_mı == True
@@ -207,7 +207,6 @@ class test_tobeto:
 
 
     def kayitli_email_ile_kayitol(self):
-        service = Service()
         self.driver.execute_script("window.scrollBy(0,300)","")
 
         kayit_ol_buton = WebDriverWait(self.driver,5).until(ec.visibility_of_element_located((By.CSS_SELECTOR,"a[class='text-decoration-none text-muted fw-bold']"))).click()
@@ -227,7 +226,7 @@ class test_tobeto:
         uyeliksozlesmesi = self.driver.find_element(By.NAME,"membershipContrat").click()
         emailgonderimizni = self.driver.find_element(By.NAME,"emailConfirmation").click()
         aramaizni =self.driver.find_element(By.NAME,"phoneConfirmation").click()
-        telno = self.driver.find_element(By.ID,"phoneNumber").send_keys("5551111111")
+        telno = self.driver.find_element(By.ID,"phoneNumber").send_keys("5555555555")
         iframe = self.driver.find_element(By.CSS_SELECTOR,"iframe[title='reCAPTCHA']")
         self.driver.switch_to.frame(iframe)
         sleep(2)
@@ -243,6 +242,15 @@ class test_tobeto:
             print("test geçemedi")
 
 
+    def chatbot_uyari_mesaji_kontrolu(self):
+        self.chatbot_mesaj_bolumu_acilma()
+        print("burda kalıyorum")
+        sleep(3)
+        # self.driver.switch_to.default_content()
+        # iframe_mesajlasma_bitirme_ikonu = WebDriverWait(self.driver,15).until(ec.visibility_of_element_located((By.CSS_SELECTOR,"iframe[class='exw-conversation-container-frame']")))
+        # WebDriverWait(self.driver,20).until(ec.frame_to_be_available_and_switch_to_it(iframe_mesajlasma_bitirme_ikonu))
+        mesajlasma_bitirme_ikonu = self.driver.find_element(By.CSS_SELECTOR,"svg[class='exw-end-session-button header-button']")
+        mesajlasma_bitirme_ikonu.click()
 
         
 
@@ -252,7 +260,8 @@ denemeClass = test_tobeto()
 #denemeClass.basarili_giris()
 # denemeClass.bos_alanla_giris()
 #denemeClass.basarili_sifre_yenileme()
-denemeClass.basarisiz_sifre_yenileme()
-#denemeClass.chatbot_mesaj_bolumu_acilma()
+#denemeClass.basarisiz_sifre_yenileme()
+denemeClass.chatbot_mesaj_bolumu_acilma()
 #denemeClass.chatbot_kapatma()
-# denemeClass.kayitli_email_ile_kayitol()
+#denemeClass.kayitli_email_ile_kayitol()
+#denemeClass.chatbot_uyari_mesaji_kontrolu()

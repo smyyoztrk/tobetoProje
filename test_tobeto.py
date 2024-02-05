@@ -10,6 +10,8 @@ import json
 import openpyxl
 
 class Test_Tobeto:
+    def __init__(self,driver):
+        self.driver = driver
 
     # on ek >> test_    pytestte fonksiyonu çalıştırmak için fonk adı test_ ile başlamalı
 
@@ -55,12 +57,12 @@ class Test_Tobeto:
         assert mesaj.text == "• Geçersiz e-posta veya şifre."
 
     def test_basarili_giris(self):
-        email_input = WebDriverWait(self.driver,5).until(ec.visibility_of_element_located((By.NAME,"email")))
+        email_input = WebDriverWait(self.driver,10).until(ec.visibility_of_element_located((By.NAME,"email")))
         email_input.send_keys("xabiw41724@talmetry.com")
-        password_input = WebDriverWait(self.driver,5).until(ec.visibility_of_element_located((By.NAME,"password")))
+        password_input = WebDriverWait(self.driver,10).until(ec.visibility_of_element_located((By.NAME,"password")))
         password_input.send_keys("123456")
         giris_butonu = self.driver.find_element(By.CSS_SELECTOR,"button[class='btn btn-primary w-100 mt-6']").click()
-        mesaj = WebDriverWait(self.driver,5).until(ec.visibility_of_element_located((By.CSS_SELECTOR,"div[class='toast-body']")))
+        mesaj = WebDriverWait(self.driver,10).until(ec.visibility_of_element_located((By.CSS_SELECTOR,"div[class='toast-body']")))
         assert mesaj.text == "• Giriş başarılı."
 
     def test_bos_alanla_giris(self):
@@ -85,7 +87,7 @@ class Test_Tobeto:
         #link_alani = WebDriverWait(self.driver,5).until(ec.visibility_of_element_located((By.XPATH,"//*[@id='__next']/div/main/section/div/div/div/input"))).send_keys("s.kaya@msn.com")
         gonder_butonu = WebDriverWait(self.driver,5).until(ec.visibility_of_element_located((By.CSS_SELECTOR,"button[class='btn btn-primary w-100 mt-6']"))).click()
         
-        mesaj = WebDriverWait(self.driver,5).until(ec.visibility_of_element_located((By.CSS_SELECTOR,"div[class='toast-body']"))).text
+        mesaj = WebDriverWait(self.driver,15).until(ec.visibility_of_element_located((By.CSS_SELECTOR,"div[class='toast-body']"))).text
         assert mesaj == "• Şifre sıfırlama linkini e-posta adresinize gönderdik. Lütfen gelen kutunuzu kontrol edin."
     
     def test_basarisiz_sifre_yenileme(self):
@@ -147,5 +149,53 @@ class Test_Tobeto:
         var_mi = chatbot_butonu.is_displayed()
         
         assert var_mi == True
+    def test_kayitli_email_ile_kayitol(self):
+        self.driver.execute_script("window.scrollBy(0,300)","")
+
+        kayit_ol_buton = WebDriverWait(self.driver,5).until(ec.visibility_of_element_located((By.CSS_SELECTOR,"a[class='text-decoration-none text-muted fw-bold']"))).click()
         
+        sleep(3)
+        self.driver.execute_script("window.scrollBy(0,200)","")
+        ad = self.driver.find_element(By.NAME,"firstName").send_keys("ali")
+        soyad = self.driver.find_element(By.NAME,"lastName").send_keys("kaya")
+        email = self.driver.find_element(By.NAME,"email").send_keys("s.kaya@msn.com")
+        sifre = self.driver.find_element(By.NAME,"password").send_keys("123456")
+        sifretekrar = self.driver.find_element(By.NAME,"passwordAgain").send_keys("123456")
+        self.driver.execute_script("window.scrollBy(0,200)","")
+        sleep(2)
+        kayitolbutton2 = self.driver.find_element(By.CSS_SELECTOR,"button[class='btn btn-primary w-100 mt-6']").click()
+        sleep(2)
+        acıkrizametni = self.driver.find_element(By.NAME,"contact").click()
+        uyeliksozlesmesi = self.driver.find_element(By.NAME,"membershipContrat").click()
+        emailgonderimizni = self.driver.find_element(By.NAME,"emailConfirmation").click()
+        aramaizni =self.driver.find_element(By.NAME,"phoneConfirmation").click()
+        telno = self.driver.find_element(By.ID,"phoneNumber").send_keys("5555555555")
+        iframe = self.driver.find_element(By.CSS_SELECTOR,"iframe[title='reCAPTCHA']")
+        self.driver.switch_to.frame(iframe)
+        sleep(2)
+        robotdegilim = self.driver.find_element(By.ID,"recaptcha-anchor").click()
+        sleep(10)
+        self.driver.switch_to.default_content()
+        devamet_butonu =self.driver.find_element(By.CSS_SELECTOR,"button[class='btn btn-yes my-3']").click()
+        sleep(3)
+        mesaj = self.driver.find_element(By.CSS_SELECTOR,"div[class='toast-body']")
+        assert mesaj.text == "• Girdiğiniz e-posta adresi ile kayıtlı üyelik bulunmaktadır."
+    # chatbot case3 ve case4      
+    def test_chatbot_uyari_mesaji_ve_puanlama_goruntulenme_kontrolu(self):
+        self.test_chatbot_mesaj_bolumu_acilma()
+        print("burda kalıyorum")
+        sleep(3)
+        # self.driver.switch_to.default_content()
+        # iframe_mesajlasma_bitirme_ikonu = WebDriverWait(self.driver,15).until(ec.visibility_of_element_located((By.CSS_SELECTOR,"iframe[class='exw-conversation-container-frame']")))
+        # WebDriverWait(self.driver,20).until(ec.frame_to_be_available_and_switch_to_it(iframe_mesajlasma_bitirme_ikonu))
+        mesajlasma_bitirme_ikonu = self.driver.find_element(By.CSS_SELECTOR,"svg[class='exw-end-session-button header-button']")
+        mesajlasma_bitirme_ikonu.click()
+        sleep(3)
+        sleep(5)
+        bitirme_mesaji=WebDriverWait(self.driver,10).until(ec.visibility_of_element_located((By.CSS_SELECTOR,"div[class='exw-finishSessionCheck']")))
+        assert "Görüşmeyi bitirmek istediğinize emin misiniz?"  in bitirme_mesaji.text
+        evet_butonu = WebDriverWait(self.driver,10).until(ec.visibility_of_element_located((By.XPATH,"//button[text()='Evet']")))
+        evet_butonu.click()
+        puanlama = WebDriverWait(self.driver,10).until(ec.visibility_of_element_located((By.CSS_SELECTOR,"div[class='exw-survey-experience']")))
+        assert puanlama.is_displayed() == True
 
